@@ -20,7 +20,24 @@
 
 ## 赞助
 
-固件完全免费。如果这些功能对你有帮助，也欢迎自愿赞助，支持后续开发。赞助方式稍后补充。
+固件完全免费。如果这些功能对你有帮助，也欢迎自愿赞助，支持后续开发。
+
+[通过 PayPal 赞助](https://paypal.me/CircuseeX)
+
+<details>
+<summary>微信、支付宝赞助</summary>
+
+微信赞赏码：
+
+<a href="assets/support/wechat.jpg"><img src="assets/support/wechat.jpg" alt="微信赞赏码" width="240"></a>
+
+支付宝收款码：
+
+<a href="assets/support/alipay.png"><img src="assets/support/alipay.png" alt="支付宝收款码" width="240"></a>
+
+点击图片可查看原图。
+
+</details>
 
 ## 关于项目
 
