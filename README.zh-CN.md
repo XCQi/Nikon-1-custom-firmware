@@ -8,7 +8,7 @@
 
 | 机型 | 版本 | 新增功能 | 使用说明 |
 |---|---|---|---|
-| Nikon 1 J5 | v7 | M、A 档对焦放大，放大持续保持，A 档拍摄及自动 ISO | [J5 使用说明](cameras/J5/README.zh-CN.md) |
+| Nikon 1 J5 | Patched-v07 | M、A 档对焦放大，放大持续保持，A 档拍摄及自动 ISO | [J5 使用说明](cameras/J5/README.zh-CN.md) |
 
 ## 下载与安装
 

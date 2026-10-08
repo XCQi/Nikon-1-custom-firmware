@@ -1,8 +1,8 @@
-# Nikon 1 J5 Custom Firmware v7
+# Patched-v07 — Nikon 1 J5 C1.01
 
 English | [简体中文](README.zh-CN.md) · [Project home](../../README.md)
 
-v7 adds focus magnification, A-mode capture and Auto ISO for mechanical lenses on the J5, without a Dandelion chip or electronic adapter. Nikon 1 J5 only; installation has been tested from C1.01.
+Patched-v07 adds focus magnification, A-mode capture and Auto ISO for mechanical lenses on the J5, without a Dandelion chip or electronic adapter. Nikon 1 J5 only; installation has been tested from C1.01.
 
 ## Added features
 
@@ -15,12 +15,12 @@ Aperture is still adjusted with the lens aperture ring. The OK hint or aperture 
 
 ## Downloads
 
-Download the file needed from the [J5 v7 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-v7):
+Download the file needed from the [J5 Patched-v07 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v07):
 
 | File | Purpose |
 |---|---|
-| `J5_v7.bin` | Install the custom firmware |
-| `J5_stock_restore.bin` | Restore stock functions |
+| `Patched-v07_J5_0101.bin` | Install the custom firmware |
+| `Stock-restore_J5_0101.bin` | Restore stock functions |
 
 Keep only the firmware being installed on the card, to avoid mixing them up.
 
@@ -28,7 +28,7 @@ Keep only the firmware being installed on the card, to avoid mixing them up.
 
 Have a charged battery and card reader ready, and back up the photographs on the card. If the camera is on C1.00, first update to C1.01 using [Nikon's official instructions](https://downloadcenter.nikonimglib.com/en/download/fw/234.html). Do not interrupt power or remove the card during the update.
 
-1. Download `J5_v7.bin` and copy it to the root of the memory card.
+1. Download `Patched-v07_J5_0101.bin` and copy it to the root of the memory card.
 2. Insert the card, turn the camera on and open Setup → Firmware version → Update.
 3. Follow the on-screen instructions to complete the update and turn the camera off.
 4. Delete the update file from the card, then turn the camera on again.
@@ -39,7 +39,7 @@ After installation, the version screen still shows C1.01 and the update entry ma
 
 ## Restoring stock functions
 
-Download `J5_stock_restore.bin`, copy it to the card root and follow the same update steps. Delete the update file when finished and restart. The magnification, A-mode capture and Auto ISO modifications are removed.
+Download `Stock-restore_J5_0101.bin`, copy it to the card root and follow the same update steps. Delete the update file when finished and restart. The magnification, A-mode capture and Auto ISO modifications are removed.
 
 The restoration package has been tested. It retains stock functional code and only adjusts update recognition and checksums so it can be installed on C1.01. An untouched official C1.01 file may be rejected because its version matches. The version screen still shows C1.01 after restoration.
 
@@ -53,7 +53,7 @@ This release does not change S/P modes or 4K recording specifications, and canno
 
 ## Changelog
 
-### v7: First public release
+### Patched-v07: First public release
 
 - Adds M/A focus magnification without an automatic timeout.
 - Adds A-mode capture and Auto ISO for mechanical lenses.

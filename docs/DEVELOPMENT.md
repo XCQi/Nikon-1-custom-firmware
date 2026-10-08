@@ -1,8 +1,8 @@
-# J5 v7 Development Notes
+# J5 Patched-v07 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 v7. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 Patched-v07. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
@@ -10,7 +10,7 @@ These addresses apply only to the verified original J5 C1.01 firmware. Other Nik
 
 Stock restrictions for mechanical lenses are spread across several functions. Allowing entry into focus magnification does not change its timer. Removing the A-mode warning does not grant capture permission. An available ISO menu option also does not establish that metering uses the setting.
 
-v7 therefore changes magnification entry, its timer, the A-mode warning, capture eligibility and two Auto-ISO restrictions separately. Aperture remains controlled on the lens; electronic-lens information is not fabricated and the automatic exposure algorithm is not rewritten.
+Patched-v07 therefore changes magnification entry, its timer, the A-mode warning, capture eligibility and two Auto-ISO restrictions separately. Aperture remains controlled on the lens; electronic-lens information is not fabricated and the automatic exposure algorithm is not rewritten.
 
 ## Firmware container and addresses
 
@@ -36,7 +36,7 @@ An update entry establishes only candidate acceptance. Actual features must be c
 
 At image `0xAC71E`, runtime `0x12C71E`, `3FD0→C046` replaces the conditional branch blocking magnification in `CameraNonCPULens` with a Thumb NOP.
 
-An early incorrect edit in `ShootSequenceAct` was reverted. v7 retains original `08D0` at image `0xAC8D6`. The on-screen OK hint is controlled by separate UI code and was not changed.
+An early incorrect edit in `ShootSequenceAct` was reverted. Patched-v07 retains original `08D0` at image `0xAC8D6`. The on-screen OK hint is controlled by separate UI code and was not changed.
 
 ## Removing the magnification timeout
 
@@ -73,7 +73,7 @@ Allowed capture continues at `0x1DFD0E`; otherwise execution continues at origin
 
 The original producer at runtime `0x17A5C2` calls `0x178B2C` to obtain the ISO setting, then calls `0x17A4D0` for second-stage handling before writing property `0x2C9`.
 
-Two lens-state checks replace automatic ISO enums `2/3/4` with fixed enum `0x0F`: the first checks `0x3EE`, the second `0x3F8/0x3F9`. v7 adds conditional exceptions at both sites:
+Two lens-state checks replace automatic ISO enums `2/3/4` with fixed enum `0x0F`: the first checks `0x3EE`, the second `0x3F8/0x3F9`. Patched-v07 adds conditional exceptions at both sites:
 
 | Image offset | Runtime address | Byte change | New function entry |
 |---|---|---|---|
@@ -90,7 +90,7 @@ Two property interfaces must not be mixed: the public object is obtained through
 
 ## Where the added code lives
 
-Original image `0x2C0..0x7FF` is zero-filled. The three added functions use non-overlapping parts of this space. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and v7 also show that the added code was loaded and executed.
+Original image `0x2C0..0x7FF` is zero-filled. The three added functions use non-overlapping parts of this space. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and Patched-v07 also show that the added code was loaded and executed.
 
 Static searches cannot exhaust all indirect references. Further use of this space requires checking occupancy again, along with ARM/Thumb state, function-pointer low bits, complete instruction boundaries, registers, flags, LR, stack alignment and return addresses.
 
@@ -118,5 +118,5 @@ Other Nikon 1 models require independent checks of container, address mapping, i
 | File | SHA-256 |
 |---|---|
 | Official original | `5fae892c396d4213ebf5a4982fa98559c6c79e00f5e6e0cbe6251084cb9b1b04` |
-| v7 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
+| Patched-v07 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
 | Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |
