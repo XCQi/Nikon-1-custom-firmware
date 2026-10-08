@@ -2,28 +2,26 @@
 
 English | [简体中文](README.zh-CN.md)
 
-Free community firmware enhancements that help existing Nikon 1 cameras do more. Starting with the **Nikon 1 J5**, with other models organized separately as support is added.
+This project adds features that are not available in Nikon's stock firmware. It currently supports the J5, with a focus on making mechanical lenses easier to use.
 
 ## Supported cameras
 
-| Camera | Current version | Main features | Instructions |
+| Camera | Version | Added features | Instructions |
 |---|---|---|---|
-| Nikon 1 J5 | v7 | Mechanical-lens M/A focus magnification, persistent magnification, A-mode capture and Auto ISO | [J5 guide](cameras/J5/README.md) |
+| Nikon 1 J5 | v7 | M/A focus magnification, magnification without timeout, A-mode capture and Auto ISO | [J5 guide](cameras/J5/README.md) |
 
-## Downloads
+## Download and install
 
-[Releases](https://github.com/XCQi/Nikon-1-custom-firmware/releases) provide **ready-to-install BIN files**. No Python, compilation or patching is required.
+Download the BIN for the camera from [Releases](https://github.com/XCQi/Nikon-1-custom-firmware/releases) and follow its guide. No compilation or patching is required. Each camera folder contains its features, installation steps, restoration instructions and changelog.
 
-Each camera folder contains its features, installation/restoration guide and changelog. Use only firmware for your camera model.
+## Development notes
 
-## For developers
+The approach and technical details are described in the [development document](docs/DEVELOPMENT.md).
 
-[Development approach and technical notes](docs/DEVELOPMENT.md)
+## Support
 
-## Free firmware and optional support
+The firmware is completely free. If these features are useful, voluntary donations are welcome to support further development. Donation details will be added later.
 
-All firmware is completely free. No payment is required to download or use it. Voluntary support is welcome if you would like to encourage the project. PayPal, Alipay or WeChat support details will be added here when provided.
+## About the project
 
-## About
-
-This is unofficial experimental community firmware, unaffiliated with Nikon. See each camera guide for tested scope and limitations. Copyright in the original Nikon firmware remains with Nikon.
+This is independently developed, unofficial firmware, unaffiliated with Nikon. Read the camera's guide before use for tested features and limitations. Copyright in the original firmware belongs to Nikon.

@@ -1,58 +1,122 @@
-# Nikon 1 custom firmware development: J5 v7
+# J5 v7 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-## Scope and reproduction
+This document records the approach and key addresses used in J5 v7. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
-This document is for developers. Users can download the BIN and follow the installation guide. Patches apply only to the exact J5 C1.01 input, not other Nikon 1 bodies. This document publishes the implementation approach and key addresses; full source, build tools and detailed analysis material are retained in the internal handoff.
+These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
-## Container and addresses
+## Why several separate edits were needed
 
-The main image starts at decoded package offset 0x50. Low-address code in this document uses runtime=image offset+0x80000; copied high-RAM sections require separate mapping. The first 32 package bytes remain unchanged. Subsequent bytes use three 256-byte XOR tables: raw[i] XOR t0[i&255] XOR t1[(i>>8)&255] XOR t2[(i>>16)&255]. The same transform re-encodes the package; the three tables come from historical Firmware1.cs tooling. Patch bytes refer to decoded content.
+Stock restrictions for mechanical lenses are spread across several functions. Allowing entry into focus magnification does not change its timer. Removing the A-mode warning does not grant capture permission. An available ISO menu option also does not establish that metering uses the setting.
 
-## Update recognition and runtime version
+v7 therefore changes magnification entry, its timer, the A-mode warning, capture eligibility and two Auto-ISO restrictions separately. Aperture remains controlled on the lens; electronic-lens information is not fabricated and the automatic exposure algorithm is not rewritten.
 
-The main-image +0x800 header changes from Ver.1.0100 to Ver.1.0101: package byte 0x859 changes 30→31. Runtime defaults at image+0x16490C and +0xA33CF0 remain unchanged. A/B probes found no update entry when only the outer entry name changed, but an entry when only the image header changed. Static comparison and repeated updates support this finer candidate-version scheme. The version screen still shows C1.01 and the update entry may remain. An entry proves only precheck acceptance; feature and restoration tests provide separate installation evidence. This is not a general downgrade method.
+## Firmware container and addresses
 
-## MF magnification entry
+The main image starts at decoded package offset `0x50`. Low-address code in this document uses `runtime=image offset+0x80000`; code copied into high RAM requires a separate mapping.
 
-At image 0xAC71E / runtime 0x12C71E, 3FD0→C046 replaces a branch with a Thumb NOP in CameraNonCPULens. The early incorrect ShootSequenceAct edit was reverted; image 0xAC8D6 retains original 08D0. The on-screen OK hint belongs to a separate UI path and was not added.
+The first 32 container bytes remain unchanged. Subsequent bytes are XORed using three 256-byte tables:
 
-## Persistent magnification
+```text
+raw[i] XOR t0[i&255] XOR t1[(i>>8)&255] XOR t2[(i>>16)&255]
+```
 
-mf_timer_am.s starts at image 0x2C0, with 228 text bytes reserved through 0x3AF. The hook at image 0x4C8A78 / runtime 0x548A78 changes B1F699FF032892D1→004B1847C1020800. An absolute jump enters Thumb 0x802C1, avoiding the old Thumb BL range limit. Only timer=3 with all reads successful can match: M uses (0x13,0x2BB)=(4,3), A uses (3,2), and both require 0x3EE=0, 0x419!=5, 0x2A2!=1. Matches suppress timeout; other states retain original processing. Non-expired/expired continuations are 0x5489A6/0x5489F2. Half-press and OK exits remain available.
+The tables come from historical `Firmware1.cs` tooling. The same transformation decodes and re-encodes the container. Image offsets and patch bytes below refer to decoded content.
 
-## A-mode warning and capture
+## Update recognition and version display
 
-At image 0x15A78A / runtime 0x1DA78A, 07→41 handles the warning, but this edit alone enabled metering without capture. The capture hook at image 0x15FD02 / runtime 0x1DFD02 changes 032803D0→A0F655FB, branching to 0x803B0. a_capture_c2.s occupies 196 bytes at image 0x3B0..0x473. It retains the original effective-mode-3 allowance. Added mode 2 also requires the original C2 byte at the hook to be zero and successful public reads of 0x13=3, 0x3EE=0, 0x419!=5, 0x2A2!=1 and 0x2BB=2. Allow/original continuations are 0x1DFD0E/0x1DFD06. Registers and stack are preserved; AE is not rewritten and lens aperture data is not fabricated.
+The main-image `+0x800` header changes from `Ver.1.0100` to `Ver.1.0101`, corresponding to `30→31` at package offset `0x859`. Runtime defaults at `image+0x16490C` and `image+0xA33CF0` remain unchanged. The version screen therefore still shows C1.01, and the update entry may remain available.
+
+Earlier A/B tests found no update entry when only the outer entry name changed, but an entry when only the main-image header changed. Static version-comparison analysis and repeated installations also support this approach.
+
+An update entry establishes only candidate acceptance. Actual features must be checked to confirm installation. This approach does not establish that an arbitrary higher version can be downgraded to C1.01.
+
+## Focus magnification entry
+
+At image `0xAC71E`, runtime `0x12C71E`, `3FD0→C046` replaces the conditional branch blocking magnification in `CameraNonCPULens` with a Thumb NOP.
+
+An early incorrect edit in `ShootSequenceAct` was reverted. v7 retains original `08D0` at image `0xAC8D6`. The on-screen OK hint is controlled by separate UI code and was not changed.
+
+## Removing the magnification timeout
+
+The added function `mf_timer_am.s` starts at image `0x2C0`. Code and constants occupy 228 bytes, with space reserved through `0x3AF`.
+
+The timer hook is at image `0x4C8A78`, runtime `0x548A78`. `B1F699FF032892D1→004B1847C1020800` uses an absolute jump to Thumb entry `0x802C1`. An old-style Thumb BL cannot be used directly because the target is outside its range.
+
+Timeout is suppressed only for timer 3, with all property reads successful and the following conditions met:
+
+- M: `(0x13,0x2BB)=(4,3)`; A: `(0x13,0x2BB)=(3,2)`.
+- `0x3EE=0`, `0x419!=5`, `0x2A2!=1`.
+
+Other states retain original timer handling. Non-expired and expired continuations are `0x5489A6` and `0x5489F2`, respectively. Half-press and OK exit handling is unchanged.
+
+## A-mode capture
+
+The edit `07→41` at image `0x15A78A`, runtime `0x1DA78A`, removes the A-mode warning. This alone allowed metering but still did not allow capture.
+
+Capture eligibility is checked separately at image `0x15FD02`, runtime `0x1DFD02`. `032803D0→A0F655FB` calls `0x803B0` with BL. The added function `a_capture_c2.s` occupies 196 bytes at image `0x3B0..0x473`.
+
+The edit retains the original allowance for effective mode 3 and adds effective mode 2. The added branch requires the original C2 byte at entry to be zero and successful public-property reads of:
+
+```text
+0x13=3
+0x3EE=0
+0x419!=5
+0x2A2!=1
+0x2BB=2
+```
+
+Allowed capture continues at `0x1DFD0E`; otherwise execution continues at original `0x1DFD06`. The function saves and restores registers and stack without changing original exposure calculations or lens aperture data.
 
 ## A-mode Auto ISO
 
-The original ISO producer at runtime 0x17A5C2 calls 0x178B2C for configuration, then 0x17A4D0 for second-stage handling before writing 0x2C9. Two lens-state clamps convert automatic enums 2/3/4 to 0x0F: one checks 0x3EE, the other 0x3F8/0x3F9. v7 changes 022803D0→05F748FF at image 0xFA5EC / runtime 0x17A5EC to enter 0x80480, and 022C03D0→05F7CAFF at image 0xFA518 / runtime 0x17A518 to enter 0x804B0. a_auto_iso.s occupies 256 bytes at image 0x480..0x57F.
+The original producer at runtime `0x17A5C2` calls `0x178B2C` to obtain the ISO setting, then calls `0x17A4D0` for second-stage handling before writing property `0x2C9`.
 
-## Property interfaces and exception scope
+Two lens-state checks replace automatic ISO enums `2/3/4` with fixed enum `0x0F`: the first checks `0x3EE`, the second `0x3F8/0x3F9`. v7 adds conditional exceptions at both sites:
 
-The ISO exception matches only automatic enums 2/3/4 and requires successful current staged-view reads of 0x13=3, 0x419!=5, 0x2A2!=1 and 0x3EE=0. Other original ISO/HDR handling remains. Success is 0xF0000000. Public-object factory 0x2CE0A9 uses vtable+0 for its getter; the staged view uses +4. These interfaces must not be mixed, and potentially unsynchronized public state should not replace staged state. 0x0F is an enum; its conversion to numeric ISO has not been independently traced in full.
+| Image offset | Runtime address | Byte change | New function entry |
+|---|---|---|---|
+| `0xFA5EC` | `0x17A5EC` | `022803D0→05F748FF` | `0x80480` |
+| `0xFA518` | `0x17A518` | `022C03D0→05F7CAFF` | `0x804B0` |
 
-## Code placement
+The added function `a_auto_iso.s` occupies 256 bytes at image `0x480..0x57F`.
 
-Original image 0x2C0..0x7FF is zero-filled. Analysis checked the boot entry, nearby literals, discovered copy/clear ranges and image write start; the three helpers do not overlap. Working v3/v5/v7 hardware behavior supports loading and execution, but static searches do not exhaustively prove the absence of all indirect references. Recheck placement when expanding usage. Verify ARM/Thumb state, function-pointer low bits, complete instruction boundaries, registers, flags, LR, stack alignment and continuation semantics.
+Exceptions apply only to automatic ISO enums `2/3/4`, with successful current staged-view reads of `0x13=3`, `0x419!=5`, `0x2A2!=1` and `0x3EE=0`. Fixed ISO, HDR and other handling remain unchanged. Successful property reads return `0xF0000000`.
 
-## Nested CRC and restoration
+Two property interfaces must not be mixed: the public object is obtained through factory `0x2CE0A9`, with its getter at `vtable+0`; the staged-view getter is at `+4`. The staged view holds the state used for this calculation and must not be replaced with potentially unsynchronized public state.
 
-Use binascii.crc_hqx(data,0), stored big-endian. Embedded CRC at decoded package 0x175A6E0..E1 covers [0x50,0x175A6E0). Outer CRC at 0x175A6E2..E3 covers [0,0x175A6E2), including the written embedded CRC. Each appended CRC gives a zero syndrome; encode afterward and preserve other trailing bytes. Restoration is regenerated from stock: only package 0x859 changes 30→31 and two embedded CRC bytes change. Outer CRC happens to remain unchanged; all functional code remains stock. Restoration was tested successfully; it is not brick recovery.
+`0x0F` is an internal enum, not a direct numeric ISO value. Its conversion to actual ISO has not been independently traced in full.
 
-## Verification and porting limits
+## Where the added code lives
 
-Offline models cover 5,187 capture cases, 79,380 timer cases and 38,400 Auto-ISO cases; reports are retained in the internal handoff. They execute relevant instructions with mocked property interfaces, not the sensor, real AE or flash safety. See the J5 guide for the scope of hardware feedback. Empty-FT1 Auto ISO did not vary; this does not prove zero effect on all electronic lenses. Other Nikon 1 bodies require independent container, mapping, instruction-set, property-contract, boot, update and target-path checks. Reusing J5 addresses or merely changing the model name is not a port.
+Original image `0x2C0..0x7FF` is zero-filled. The three added functions use non-overlapping parts of this space. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and v7 also show that the added code was loaded and executed.
 
+Static searches cannot exhaust all indirect references. Further use of this space requires checking occupancy again, along with ARM/Thumb state, function-pointer low bits, complete instruction boundaries, registers, flags, LR, stack alignment and return addresses.
 
-## Release files and evidence limits
+## CRC and restoration firmware
 
-Users download the BIN directly from Releases; no build is required. The internal builder starts from the exact official input and checks original bytes, change scope, nested CRC and final SHA-256. All three assembly helpers were recompiled and compared. Offline models are not full-camera emulation, and hardware feedback comes from one J5; see the [J5 guide](../cameras/J5/README.md) for untested scope.
+CRC uses `binascii.crc_hqx(data,0)`, stored big-endian:
 
-Original input SHA-256: `5fae892c396d4213ebf5a4982fa98559c6c79e00f5e6e0cbe6251084cb9b1b04`.
+| Checksum | Decoded package location | Coverage |
+|---|---|---|
+| Embedded CRC | `0x175A6E0..E1` | `[0x50,0x175A6E0)` |
+| Outer CRC | `0x175A6E2..E3` | `[0,0x175A6E2)` |
 
-v7 SHA-256: `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2`.
+Write the embedded CRC first, then calculate the outer CRC including it. Each appended CRC produces a zero remainder. Re-encode afterward and preserve other trailing bytes.
 
-Restoration SHA-256: `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6`.
+Restoration firmware is regenerated from stock. Only the version character at package offset `0x859` and two embedded CRC bytes change; the recalculated outer CRC happens to remain unchanged. All functional code matches stock, and restoration has been tested successfully. Use still requires a working update menu.
+
+## Verification and porting
+
+Offline instruction models checked 5,187 capture combinations, 79,380 timer combinations and 38,400 Auto-ISO combinations. Reports are retained in the internal handoff. Models execute relevant instructions with mocked property interfaces, not the sensor, actual automatic exposure or flash programming.
+
+Both release files were rebuilt from the official original, checking original bytes, change scope, nested CRC and final SHA-256. All three assembly helpers were recompiled and compared. See the [J5 guide](../cameras/J5/README.md) for hardware test scope.
+
+Other Nikon 1 models require independent checks of container, address mapping, instruction set, property interfaces, boot process, update checks and target functions. Changing the model name or reusing J5 addresses is insufficient.
+
+| File | SHA-256 |
+|---|---|
+| Official original | `5fae892c396d4213ebf5a4982fa98559c6c79e00f5e6e0cbe6251084cb9b1b04` |
+| v7 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
+| Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |
