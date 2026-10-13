@@ -1,8 +1,8 @@
-# J5 patched v07 Development Notes
+# J5 patched v08 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 patched v07. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 patched v08, including the features introduced in v07. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
@@ -69,7 +69,7 @@ The edit retains the original allowance for effective mode 3 and adds effective 
 
 Allowed capture continues at `0x1DFD0E`; otherwise execution continues at original `0x1DFD06`. The function saves and restores registers and stack without changing original exposure calculations or lens aperture data.
 
-## A-mode Auto ISO
+## M/A Auto ISO
 
 The original producer at runtime `0x17A5C2` calls `0x178B2C` to obtain the ISO setting, then calls `0x17A4D0` for second-stage handling before writing property `0x2C9`.
 
@@ -80,9 +80,9 @@ Two lens-state checks replace automatic ISO enums `2/3/4` with fixed enum `0x0F`
 | `0xFA5EC` | `0x17A5EC` | `022803D0→05F748FF` | `0x80480` |
 | `0xFA518` | `0x17A518` | `022C03D0→05F7CAFF` | `0x804B0` |
 
-The added function `a_auto_iso.s` occupies 256 bytes at image `0x480..0x57F`.
+In v07, `a_auto_iso.s` occupied 256 bytes at image `0x480..0x57F`. v08 uses `am_auto_iso.s`, 260 bytes at image `0x480..0x583`. The two hook addresses and entries remain unchanged; the additional four bytes were zero in both stock and v07.
 
-Exceptions apply only to automatic ISO enums `2/3/4`, with successful current staged-view reads of `0x13=3`, `0x419!=5`, `0x2A2!=1` and `0x3EE=0`. Fixed ISO, HDR and other handling remain unchanged. Successful property reads return `0xF0000000`.
+Exceptions apply only to automatic ISO enums `2/3/4`, with successful current staged-view reads of `0x13=3` (A) or `0x13=4` (M), `0x419!=5`, `0x2A2!=1` and `0x3EE=0`. v08 extends only this shared mode check from A to A/M; it does not rewrite automatic exposure or mix in the 4K experiments. Fixed ISO, HDR and other handling remain unchanged. Successful property reads return `0xF0000000`.
 
 Two property interfaces must not be mixed: the public object is obtained through factory `0x2CE0A9`, with its getter at `vtable+0`; the staged-view getter is at `+4`. The staged view holds the state used for this calculation and must not be replaced with potentially unsynchronized public state.
 
@@ -109,14 +109,15 @@ Restoration firmware is regenerated from stock. Only the version character at pa
 
 ## Verification and porting
 
-Offline instruction models checked 5,187 capture combinations, 79,380 timer combinations and 38,400 Auto-ISO combinations. Reports are retained in the internal handoff. Models execute relevant instructions with mocked property interfaces, not the sensor, actual automatic exposure or flash programming.
+Offline instruction models checked 5,187 capture combinations, 79,380 timer combinations and 38,400 Auto-ISO combinations for v07. The v08 Auto-ISO model checked 51,200 combinations, including M mode and failed property reads. Reports are retained in the internal handoff. Models execute relevant instructions with mocked property interfaces, not the sensor, actual automatic exposure or flash programming.
 
-Both release files were rebuilt from the official original, checking original bytes, change scope, nested CRC and final SHA-256. All three assembly helpers were recompiled and compared. See the [J5 guide](../cameras/J5/README.md) for hardware test scope.
+The v07 release and restoration files were rebuilt from the official original, checking original bytes, change scope, nested CRC and final SHA-256; all three v07 assembly helpers were recompiled and compared. v08 was also built from the official input with a complete patch list and a recompiled Auto-ISO helper. Its decoded bytes outside the Auto-ISO helper and CRC match v07. The user confirmed v08 works on the camera, including the requested M-mode Auto ISO. See the [J5 guide](../cameras/J5/README.md) for hardware test scope.
 
 Other Nikon 1 models require independent checks of container, address mapping, instruction set, property interfaces, boot process, update checks and target functions. Changing the model name or reusing J5 addresses is insufficient.
 
 | File | SHA-256 |
 |---|---|
 | Official original | `5fae892c396d4213ebf5a4982fa98559c6c79e00f5e6e0cbe6251084cb9b1b04` |
+| patched v08 | `f181a5e089dffbd07e58d4b0b79a952ffdb1dfa87a25ade648ef116e6523688c` |
 | patched v07 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
 | Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |

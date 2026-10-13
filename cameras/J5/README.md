@@ -1,45 +1,45 @@
-# Nikon 1 J5 C1.01 — patched v07
+# Nikon 1 J5 C1.01 — patched v08
 
 English | [简体中文](README.zh-CN.md) · [Project home](../../README.md)
 
-patched v07 adds focus magnification, A-mode capture and Auto ISO for mechanical lenses on the J5, without a Dandelion chip or electronic adapter. Nikon 1 J5 only; installation has been tested from C1.01.
+patched v08 adds focus magnification, A-mode capture and M/A Auto ISO for mechanical lenses on the J5, without a Dandelion chip or electronic adapter. Nikon 1 J5 only; installation has been tested from C1.01.
 
 ## Added features
 
 - **Focus magnification in M and A**: press OK to enter and use the directional buttons to move the magnified area.
 - **Magnification stays open**: no automatic timeout; half-press the shutter or press OK to exit.
 - **A-mode capture**: set aperture on the lens and let the camera choose shutter speed. Photographs can be taken and saved normally.
-- **Auto ISO in A**: select an Axxx option to let ISO adjust with brightness. Fixed ISO also works normally.
+- **Auto ISO in M and A**: select an Axxx option to let ISO adjust with brightness. In M, shutter speed stays at the value set on the camera and aperture stays under manual control on the lens. Fixed ISO also works normally.
 
 Aperture is still adjusted with the lens aperture ring. The OK hint or aperture value may be absent from the screen; this does not prevent use.
 
 ## Downloads
 
-Download the file needed from the [J5 patched v07 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v07):
+Download the file needed from the [J5 patched v08 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v08):
 
 | File | Purpose |
 |---|---|
-| `J5_0101_patched_v07.bin` | Install the custom firmware |
+| `J5_0101_patched_v08.bin` | Install the custom firmware |
 | `J5_0101_stock_restore.bin` | Restore stock functions |
 
-Keep only the firmware being installed on the card, to avoid mixing them up.
+Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, install v08 using the same steps; there is no need to restore stock functions first.
 
 ## Installation
 
 Have a charged battery and card reader ready, and back up the photographs on the card. If the camera is on C1.00, first update to C1.01 using [Nikon's official instructions](https://downloadcenter.nikonimglib.com/en/download/fw/234.html). Do not interrupt power or remove the card during the update.
 
-1. Download `J5_0101_patched_v07.bin` and copy it to the root of the memory card.
+1. Download `J5_0101_patched_v08.bin` and copy it to the root of the memory card.
 2. Insert the card, turn the camera on and open Setup → Firmware version → Update.
 3. Follow the on-screen instructions to complete the update and turn the camera off.
 4. Delete the update file from the card, then turn the camera on again.
 
-With a mechanical lens attached, press OK in M or A for focus magnification. For Auto ISO, select an Axxx option in the ISO menu. EXIF from bright and dark photographs can be used to check ISO changes.
+With a mechanical lens attached, press OK in M or A for focus magnification. For Auto ISO in M or A, select an Axxx option in the ISO menu. EXIF from bright and dark photographs can be used to check ISO changes.
 
 After installation, the version screen still shows C1.01 and the update entry may remain available. Check the actual features to confirm installation.
 
 ## Restoring stock functions
 
-Download `J5_0101_stock_restore.bin`, copy it to the card root and follow the same update steps. Delete the update file when finished and restart. The magnification, A-mode capture and Auto ISO modifications are removed.
+Download `J5_0101_stock_restore.bin`, copy it to the card root and follow the same update steps. Delete the update file when finished and restart. The magnification, A-mode capture and M/A Auto ISO modifications are removed.
 
 The restoration package has been tested. It retains stock functional code and only adjusts update recognition and checksums so it can be installed on C1.01. An untouched official C1.01 file may be rejected because its version matches. The version screen still shows C1.01 after restoration.
 
@@ -47,11 +47,17 @@ This method requires a camera that boots normally and can open the update menu. 
 
 ## Tested scope
 
-The features above have been tested on one J5. Fixed ISO and M-mode capture also worked normally. Electronic-lens combinations, all Auto-ISO caps and long-term reliability have not been fully tested.
+The features above have been tested on one J5, including M-mode Auto ISO added in v08. Fixed ISO and M-mode capture also worked normally. Electronic-lens combinations, all Auto-ISO caps and long-term reliability have not been fully tested.
 
 This release does not change S/P modes or 4K recording specifications, and cannot be used on other Nikon 1 models. It is unofficial experimental firmware.
 
 ## Changelog
+
+### patched v08: M-mode Auto ISO
+
+- Adds Auto ISO (Axxx) for mechanical lenses in M mode; tested on the camera.
+- Retains v07 focus magnification, A-mode capture and A-mode Auto ISO.
+- Uses the same stock-functions restoration firmware as v07.
 
 ### patched v07: First public release
 
