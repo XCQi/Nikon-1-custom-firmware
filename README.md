@@ -2,13 +2,15 @@
 
 English | [简体中文](README.zh-CN.md)
 
-This project adds features that are not available in Nikon's stock firmware. It currently supports the J5, with a focus on making mechanical lenses easier to use.
+This project adds features that are not available in Nikon's stock firmware. It currently supports the J5, including mechanical-lens features, FT1 improvements and shorter interval shooting.
 
 ## Supported cameras
 
 | Camera | Version | Added features | Guide |
 |---|---|---|---|
-| Nikon 1 J5 | patched v08 | M/A focus magnification, magnification without timeout, A-mode capture, and M/A Auto ISO | [J5 guide](cameras/J5/README.md) |
+| Nikon 1 J5 | patched v09 | Mechanical-lens support, partial FT1 AF-point unlock, 1-second intervals, and FT1 lens compatibility preview | [J5 guide](cameras/J5/README.md) |
+
+FT1 features have compatibility limits, including a known touch-shutter focus wait. Read the [J5 guide](cameras/J5/README.md) before installing.
 
 ## Download and installation
 

@@ -1,8 +1,8 @@
-# J5 patched v08 Development Notes
+# J5 patched v09 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 patched v08, including the features introduced in v07. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 patched v09, including the mechanical-lens features from v07/v08 and the three extensions integrated in v09. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
@@ -88,9 +88,61 @@ Two property interfaces must not be mixed: the public object is obtained through
 
 `0x0F` is an internal enum, not a direct numeric ISO value. Its conversion to actual ISO has not been independently traced in full.
 
+## v09: Partial FT1 AF-area unlock
+
+Two edits retain the selected single-point position and allow point-selection input:
+
+| Image offset | Runtime address | Bytes | Effect |
+|---|---|---|---|
+| `0x12BA5E` | `0x1ABA5E` | `27D0→C046` | Retains the selected point, skipping the lens-type branch that forces the center |
+| `0x12C1F4` | `0x1AC1F4` | `02D0→C046` | Removes the final lens-type rejection in point-selection eligibility |
+
+Busy, no-lens, MF and other eligibility checks remain. A J5 with FT1 and a Nikon 16–85mm has focused and saved photographs at some non-central points. The touch entry also changes `1FD0` to `C046` at image `0x12E50E`, runtime `0x1AE50E`, allowing FT1 to continue through native coordinate updates. Hardware feedback confirmed touch selection works, but an out-of-range focus failure could leave the interface stuck.
+
+This revision adds a 548-byte Thumb helper at image `[0x584,0x7A8)`, runtime `[0x80584,0x807A8)`. It uses the native 105-point map at `0x2D0770` to constrain FT1 single-point AF positions:
+
+| Image offset | Runtime address | Wrapped operation |
+|---|---|---|
+| `0x12E2F0` | `0x1AE2F0` | Touch AF coordinates: run the native conversion first, then snap out-of-range points to the nearest point |
+| `0x12C4E6` | `0x1AC4E6` | Directional calculation: retain the original point if the candidate is outside the set |
+| `0x12C6C2` | `0x1AC6C2` | Step calculation: skip out-of-range points in the original direction |
+| `0x12BBF2`, `0x12EAA2`, `0x12EB88`, `0x12EC72` | `0x1ABBF2`, `0x1AEAA2`, `0x1AEB88`, `0x1AEC72` | Initialization/refresh: correct the working point from saved state, without extra setting writes or notifications |
+
+The helper preserves registers and the calling convention. It does not globally replace the coordinate converter shared with MF magnification. The underlying 105-point map, autofocus algorithm, lens protocol, focus-result notifications and cancellation notifications remain unchanged. Native lenses and MF do not use these bounds.
+
+The 105-point set is not a filled rectangle. The manual calls the fixed on-screen outline the “AF-area brackets”; its footnote only describes visibility in the detailed display. Its geometry has not been matched to the 105-point map, and the reason FT1 cannot complete focus outside the frame remains unresolved. This build does not claim full-frame AF. Auto-area, face-priority and tracking modes remain unchanged.
+
+Offline instruction models of the final helper, native selection callers and coordinate conversion passed 462 touch cases, 8 native-lens touch cases, 924 directional cases, 420 step cases, 512 initialization cases and 46 guard cases. The models do not execute actual autofocus, lens communication or focus-failure exit. Hardware feedback confirms out-of-range touch snapping. Low-contrast touch-shutter focus can still keep the controls unavailable; see the J5 guide.
+
+## v09: One-second interval shooting
+
+Three menu edits lower the minimum:
+
+| Image offset | Runtime address | Bytes |
+|---|---|---|
+| `0x3D8D7C` | `0x458D7C` | `0520→0120` |
+| `0x3D8DA8` | `0x458DA8` | `0528→0128` |
+| `0x3D8DAC` | `0x458DAC` | `0520→0120` |
+
+With only the menu edits, a preparation event at a 1- or 2-second interval can arrive while the previous capture is still busy and be skipped; the capture tick still consumes one count. A 22-byte logging slot at image `0x102856..0x10286B`, runtime `0x182856..0x18286B`, is therefore reused for these Thumb instructions:
+
+```text
+A8688321890040184088032802D2770800D101270024
+```
+
+For 1- and 2-second settings, the preparation-timer argument becomes `max(1 ms, still_delay/2)`. Settings of three seconds or longer retain the native argument. The capture timer, busy protection, AF eligibility, attempt counter and card-writing driver are unchanged. Standalone test02 passed short-exposure RAW tests of 20 photographs each at one and two seconds, but longer sequences or focusing time may still affect the saved count.
+
+## v09: FT1 lens-restriction unlock preview
+
+One byte changes from `01` to `00` at image `0x25966E`, runtime `0x2D966E`, changing `movs r0,#1` to `movs r0,#0`. This leaves the isolated restriction flag at state `+0x50` clear after a lens-list match. Entry conditions, list traversal, hardware errors and communication-error handling remain. Lens identity is not fabricated, and no lens protocol or AF capability is added.
+
+A forum tester reported MF photography with the Nikon 200–500mm, with VR and electronic aperture stop-down during capture working; AF remains unavailable. The Sigma 105mm f/2.8 OS lens error remains unresolved. Only this feature is labeled a preview in the release.
+
+Relative to v08, there are 16 added edit ranges totaling 611 bytes, including the 548-byte selection helper. The ranges do not overlap. The combined file is rebuilt from the official input and complete edit list, with CRCs recalculated together. Reversing the additions reproduces public v08 exactly; reversing all edits reproduces stock exactly. This v09 file is byte-identical to bounds candidate touch-test02, with its filename changed to the release convention. Hardware feedback confirms point snapping and capture at some points; all 105 points and a complete integrated regression have not been covered.
+
 ## Where the added code lives
 
-Original image `0x2C0..0x7FF` is zero-filled. The three added functions use non-overlapping parts of this space. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and patched v07 also show that the added code was loaded and executed.
+Original image `0x2C0..0x7FF` is zero-filled. The three helpers retained from v08 and the new selection helper at `[0x584,0x7A8)` occupy non-overlapping parts of it. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and patched v07 also show that the added code was loaded and executed.
 
 Static searches cannot exhaust all indirect references. Further use of this space requires checking occupancy again, along with ARM/Thumb state, function-pointer low bits, complete instruction boundaries, registers, flags, LR, stack alignment and return addresses.
 
@@ -119,5 +171,6 @@ Other Nikon 1 models require independent checks of container, address mapping, i
 |---|---|
 | Official original | `5fae892c396d4213ebf5a4982fa98559c6c79e00f5e6e0cbe6251084cb9b1b04` |
 | patched v08 | `f181a5e089dffbd07e58d4b0b79a952ffdb1dfa87a25ade648ef116e6523688c` |
+| patched v09 | `f1ba918e560cbbc2c0802701e3991bca698bbf8c1a0e1d0d9b9de1cd96b58a4b` |
 | patched v07 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
 | Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |
