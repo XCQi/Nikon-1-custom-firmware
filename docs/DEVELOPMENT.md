@@ -1,8 +1,8 @@
-# J5 patched v09 Development Notes
+# J5 patched v10 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 patched v09, including the mechanical-lens features from v07/v08 and the three extensions integrated in v09. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 patched v10, including the earlier lens/interval features and the Wi-Fi/Fn2 assignment added in v10. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
@@ -140,6 +140,18 @@ A forum tester reported MF photography with the Nikon 200–500mm, with VR and e
 
 Relative to v08, there are 16 added edit ranges totaling 611 bytes, including the 548-byte selection helper. The ranges do not overlap. The combined file is rebuilt from the official input and complete edit list, with CRCs recalculated together. Reversing the additions reproduces public v08 exactly; reversing all edits reproduces stock exactly. This v09 file is byte-identical to bounds candidate touch-test02, with its filename changed to the release convention. Hardware feedback confirms point snapping and capture at some points; all 105 points and a complete integrated regression have not been covered.
 
+## v10: Independent Wi-Fi/Fn2 assignment
+
+The physical Wi-Fi button decodes to logical key 0x12. At runtime 0x3B106A, the new handler sends native Fn2 UI key 0x31 for configured function values, or native Wi-Fi key 0x39 for value 0. It does not send Fn1 events. Native action 0x3EF3FA already supports separate Fn slots: Fn1 uses property 0xA4 and Fn2 uses 0xAC. The persisted Fn2 field is 0x80B5C5E4; its native default is 4 (ISO). The AC registry maximum at 0xAB54A4 changes from 7 to 8 to admit focus mode.
+
+A lazy hook at 0x3F09B8 copies the menu descriptors to an 8,716-byte heap allocation, appends node 325, and inserts a separate Setup row. The original Fn row retains selection token 0x25; Fn2 uses 0x24. Fn2 binds to AC. Seven native Fn options are copied and Wi-Fi is added as value 0. Fn2 uses the complete native 13-widget ISO page, with only its refresh callback changed to generic Fn handling; the original Fn page remains unchanged. This avoids dynamically appending a widget to the seven-row Fn page. The reused ISO heading remains a known cosmetic limitation.
+
+Three added label IDs (0x3A5–0x3A7) provide Fn2 row/title and a body-font Wi-Fi label across all 32 languages. Five resource lookup hooks handle them without changing the original label count or existing strings. Shared small bitmap 0x94 is replaced with a 32×28 grayscale dot-and-three-arcs glyph; its descriptor length is updated. Other native uses of that small bitmap also receive the new icon.
+
+The 2,766 bytes of helpers and labels occupy audited, unregistered CIPB debug command ranges at 0x11F410–0x11FFF0, with live neighboring code excluded and retired command pointers redirected. No image extension or guessed resource padding is used. Allocation failure keeps the original menu. This release is byte-identical to Fn2 menu test06; only the distribution filename changes.
+
+Independent settings, persistence, Wi-Fi restoration and the earlier display corrections were confirmed on hardware. Final font/icon adjustments have offline verification only. A reported louder FT1+16–85mm focus-motor sound when half-pressing out of the menu has not been compared against stock or attributed to this patch. Native constructor/population models use mocked camera services; they do not prove real-device rendering or all key contexts.
+
 ## Where the added code lives
 
 Original image `0x2C0..0x7FF` is zero-filled. The three helpers retained from v08 and the new selection helper at `[0x584,0x7A8)` occupy non-overlapping parts of it. Placement checks covered the boot entry, nearby constants, discovered copy/clear ranges and image write start. Hardware results from v3, v5 and patched v07 also show that the added code was loaded and executed.
@@ -174,3 +186,4 @@ Other Nikon 1 models require independent checks of container, address mapping, i
 | patched v09 | `f1ba918e560cbbc2c0802701e3991bca698bbf8c1a0e1d0d9b9de1cd96b58a4b` |
 | patched v07 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
 | Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |
+| patched v10 | `255fe4c3cf4b99cf3b0e5ee86e1bcfd854d693b08872b32ea679c2f10f7f8a15` |

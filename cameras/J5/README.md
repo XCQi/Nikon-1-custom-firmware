@@ -1,10 +1,18 @@
-# Nikon 1 J5 C1.01 — patched v09
+# Nikon 1 J5 C1.01 — patched v10
 
 English | [简体中文](README.zh-CN.md) · [Project home](../../README.md)
 
-patched v09 retains the mechanical-lens features from v08 and adds a partial FT1 AF-area unlock, intervals as short as one second, and an FT1 lens-restriction unlock preview. Nikon 1 J5 only, based on C1.01.
+patched v10 adds an independently assignable Wi-Fi/Fn2 button and retains all v09 features. Nikon 1 J5 only, based on C1.01.
 
-## New in v09
+## New in v10: Wi-Fi button as Fn2
+
+The Wi-Fi button can now be assigned independently of the original Fn button. Open **Setup → Assign Fn2 button** and choose exposure compensation, metering, white balance, ISO sensitivity, Picture Control, AF-area mode or focus mode. Choose **Wi-Fi** to restore the button’s original function. The assignment is saved when the camera is turned off. Existing restrictions on each function still apply.
+
+The new menu labels are included for all 32 firmware languages. On first use, Fn2 normally defaults to ISO sensitivity; check the assignment after installation. The submenu heading may still read “ISO sensitivity” because the page reuses that native menu layout; the selected assignment still controls Fn2.
+
+Independent assignments, persistence and restoring Wi-Fi have been tested on the camera. The final Wi-Fi font and icon adjustments have passed package checks but have not yet been confirmed on the camera. All v09 features and limitations below are retained.
+
+## Features retained from v09
 
 - **Partial FT1 AF-area unlock**: with a lens that supports autofocus through FT1, press OK and use the directional buttons, or use touch selection, to move the single AF point. With touch shutter enabled, tapping the screen focuses and takes a photograph at the selected point. This build confines FT1 single-point AF selection to the firmware’s existing central set of 105 points: an out-of-range touch snaps to the nearest point, directional movement stops at the boundary, and step selection skips out-of-range positions. A J5 with FT1 and a Nikon 16–85mm has focused and saved photographs at central and some non-central points; not all 105 points have been tested individually. Auto-area, face-priority and tracking modes are not unlocked.
 - **Intervals as short as one second**: adds 1–4-second settings while retaining longer intervals. In the standalone test firmware, both 1-second and 2-second sequences saved the requested 20 RAW photographs with short exposures and MF, at the expected intervals. Sustained speed still depends on buffering, card writing, exposure and focusing time. Card-write performance is the same as v08.
@@ -25,20 +33,20 @@ Aperture is still adjusted with the lens aperture ring. The OK hint or aperture 
 
 ## Downloads
 
-Download the file needed from the [J5 patched v09 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v09):
+Download the file needed from the [J5 patched v10 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v10):
 
 | File | Purpose |
 |---|---|
-| `J5_0101_patched_v09.bin` | Install the custom firmware |
+| `J5_0101_patched_v10.bin` | Install the custom firmware |
 | `J5_0101_stock_restore.bin` | Restore stock functions |
 
-Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07 or v08, install v09 using the same steps; there is no need to restore stock functions first.
+Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, v08 or v09, install v10 using the same steps; there is no need to restore stock functions first.
 
 ## Installation
 
 Have a charged battery and card reader ready, and back up the photographs on the card. If the camera is on C1.00, first update to C1.01 using [Nikon's official instructions](https://downloadcenter.nikonimglib.com/en/download/fw/234.html). Do not interrupt power or remove the card during the update.
 
-1. Download `J5_0101_patched_v09.bin` and copy it to the root of the memory card.
+1. Download `J5_0101_patched_v10.bin` and copy it to the root of the memory card.
 2. Insert the card, turn the camera on and open Setup → Firmware version → Update.
 3. Follow the on-screen instructions to complete the update and turn the camera off.
 4. Delete the update file from the card, then turn the camera on again.
@@ -64,6 +72,12 @@ The mechanical-lens features have been tested on one J5; fixed ISO and M-mode ca
 Mechanical-lens support in S/P is unchanged from v08. This firmware cannot be used on other Nikon 1 models. It is unofficial experimental firmware.
 
 ## Changelog
+
+### patched v10: Independently assignable Wi-Fi/Fn2 button
+
+- Adds a separate Fn2 assignment menu with the seven original Fn choices and a Wi-Fi option.
+- Saves the assignment across power cycles and includes labels for all 32 languages.
+- Retains all v09 features and the same restoration file.
 
 ### patched v09: FT1 extensions and shorter intervals
 
