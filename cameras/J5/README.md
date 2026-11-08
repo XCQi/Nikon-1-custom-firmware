@@ -21,7 +21,7 @@ On first initialization, **Half-press cancel zoom (MF) is On** and **Keep MF zoo
 
 With half-press cancellation Off, a registered full press completes a single-shot request even if the button is released quickly. Magnification ends for capture; it is not restored automatically after the photograph. This behavior was confirmed in the test15 build used as the release basis. The release removes its diagnostic captions; the shooting logic is unchanged.
 
-**Language menu:** removes the regional visibility restriction on the firmware's 32 language choices, intended to make additional languages available on Japanese-market cameras. Japanese-market hardware has not yet been tested; feedback is welcome. Button-assignment labels use the firmware's existing language resources. The two new MF setting names are provided in Simplified Chinese, Traditional Chinese, Japanese and English; other languages currently use English for those names. Menu headings and selection summaries have also been corrected.
+**Language menu:** removes the regional visibility restriction on the firmware's 32 language choices, intended to make additional languages available on Japanese-market cameras. Japanese-market hardware has not yet been tested; feedback is welcome. Button-assignment labels use the firmware's existing language resources. Both new MF setting names are localized for all 32 firmware languages. Short forms are used where needed to fit the menu. Native font coverage and text decoding have been checked; typography has not been camera-tested in every language. Menu headings and selection summaries have also been corrected.
 
 ## Features retained from v09
 
