@@ -1,10 +1,20 @@
-# J5 patched v10 Development Notes
+# J5 patched v11 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 patched v10, including the earlier lens/interval features and the Wi-Fi/Fn2 assignment added in v10. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 patched v11, including earlier lens/interval features, button assignments, MF magnification controls and menu grouping. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
+
+## v11: Menu grouping, controls and MF capture
+
+The new settings are grouped under a cloned native four-row container (node 329) at the end of Setup. Setup has 19 rows, preserving all 18 native entries, including Firmware version. The container uses its own copy of the native vtable with the generic row renderer; this avoids the Display page's brightness-specific summary behavior. Child nodes 325–328 represent Wi-Fi, Delete, half-press cancellation and MF hold. Header drawing substitutes the text argument based on node ownership without overwriting the native style descriptor.
+
+Wi-Fi/Delete remapping is restricted to the shooting handler at `0x3C3716`. Their assignments use native properties `0xAC`/`0xAD`. The two MF settings use virtual keys `0x442`/`0x443`, backed by reserved configuration bytes `0x80B5C443`/`0x80B5C442`; navigation key `0x444` uses `0x80B5C441`. Writes use the native configuration dirty mechanism; reset defaults are cancellation On and hold Off. The hold switch gates timer-3 expiry at `0x548A78`, leaving the native timer duration unchanged.
+
+With cancellation Off, the MF UI retains half-press/release events and records a logical full press. In the native SYS S1/S2 callback at `0x12B302`, an eligible rising S2 request is submitted once through the original touch-shutter flow at `0x12F91A`. That flow ends MF, waits for completion, and uses native capture requests. The original physical submission branch is skipped for that notification, while native input-cache updates at `0x1876B4` remain. Only the touch gate's S1-held rejection is bypassed during this submission; shared S1 is not modified and other qualifications stay native. This implements a committed single-shot request rather than post-shot magnification restoration. Other input conditions replay the original physical handler.
+
+The release is based on hardware-confirmed custom-menu test15. Diagnostic captions were removed for publication; instruction-level checks and container/CRC/XOR checks were rerun. These checks model the lower RTOS, sensor and storage effects and do not replace camera testing. Regional language visibility edits are included, but Japanese-market hardware remains untested. Retired debug-code/text arenas are fixed and audited; this does not establish free space or compatibility on another body.
 
 ## Why several separate edits were needed
 

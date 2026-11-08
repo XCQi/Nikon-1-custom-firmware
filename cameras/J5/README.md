@@ -1,16 +1,27 @@
-# Nikon 1 J5 C1.01 — patched v10
+# Nikon 1 J5 C1.01 — patched v11
 
 English | [简体中文](README.zh-CN.md) · [Project home](../../README.md)
 
-patched v10 adds an independently assignable Wi-Fi/Fn2 button and retains all v09 features. Nikon 1 J5 only, based on C1.01.
+patched v11 adds shooting-only assignments for the Wi-Fi and Delete buttons, configurable MF magnification behavior, and a language-menu unlock. It retains all v10 features. Nikon 1 J5 only, based on C1.01.
 
-## New in v10: Wi-Fi button as Fn2
+## New in v11
 
-The Wi-Fi button can now be assigned independently of the original Fn button. Open **Setup → Assign Fn2 button** and choose exposure compensation, metering, white balance, ISO sensitivity, Picture Control, AF-area mode or focus mode. Choose **Wi-Fi** to restore the button’s original function. The assignment is saved when the camera is turned off. Existing restrictions on each function still apply.
+Open **Setup → Custom**, at the end of the Setup menu:
 
-The new menu labels are included for all 32 firmware languages. On first use, Fn2 normally defaults to ISO sensitivity; check the assignment after installation. The submenu heading may still read “ISO sensitivity” because the page reuses that native menu layout; the selected assignment still controls Fn2.
+| Setting | What it does |
+|---|---|
+| Assign Wi-Fi button | Choose one of the seven original Fn functions, or Wi-Fi to restore its original role. |
+| Assign Delete button | Choose one of the seven original Fn functions. Only the shooting-screen behavior changes. |
+| Half-press cancel zoom (MF) | **On**: half-press exits MF magnification. **Off**: half-press and release keep it open; a full press takes a photograph. |
+| Keep MF zoom | **On**: disables the automatic timeout. **Off**: uses the original timeout of about five seconds. |
 
-Independent assignments, persistence and restoring Wi-Fi have been tested on the camera. The final Wi-Fi font and icon adjustments have passed package checks but have not yet been confirmed on the camera. All v09 features and limitations below are retained.
+The original Fn button keeps its own assignment. Wi-Fi and Delete remapping applies only on the shooting screen; playback retains their original functions. The assignments and both MF settings are saved across power cycles.
+
+On first initialization, **Half-press cancel zoom (MF) is On** and **Keep MF zoom is Off**. Previously saved choices are retained when updating. Unlike earlier versions' mechanical-lens-only hold behavior, v11 uses the same hold setting for native lenses, FT1 and mechanical lenses. Select **Keep MF zoom → On** if you want unlimited focusing time. Press OK to exit magnification.
+
+With half-press cancellation Off, a registered full press completes a single-shot request even if the button is released quickly. Magnification ends for capture; it is not restored automatically after the photograph. This behavior was confirmed in the test15 build used as the release basis. The release removes its diagnostic captions; the shooting logic is unchanged.
+
+**Language menu:** removes the regional visibility restriction on the firmware's 32 language choices, intended to make additional languages available on Japanese-market cameras. Japanese-market hardware has not yet been tested; feedback is welcome. Button-assignment labels use the firmware's existing language resources. The two new MF setting names are provided in Simplified Chinese, Traditional Chinese, Japanese and English; other languages currently use English for those names. Menu headings and selection summaries have also been corrected.
 
 ## Features retained from v09
 
@@ -25,7 +36,7 @@ Independent assignments, persistence and restoring Wi-Fi have been tested on the
 These features do not require a Dandelion chip or electronic adapter.
 
 - **Focus magnification in M and A**: press OK to enter and use the directional buttons to move the magnified area.
-- **Magnification stays open**: no automatic timeout; half-press the shutter or press OK to exit.
+- **Configurable magnification duration and exit behavior**: use the two MF settings described above.
 - **A-mode capture**: set aperture on the lens and let the camera choose shutter speed. Photographs can be taken and saved normally.
 - **Auto ISO in M and A**: select an Axxx option to let ISO adjust with brightness. In M, shutter speed stays at the value set on the camera and aperture stays under manual control on the lens. Fixed ISO also works normally.
 
@@ -33,20 +44,20 @@ Aperture is still adjusted with the lens aperture ring. The OK hint or aperture 
 
 ## Downloads
 
-Download the file needed from the [J5 patched v10 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v10):
+Download the file needed from the [J5 patched v11 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v11):
 
 | File | Purpose |
 |---|---|
-| `J5_0101_patched_v10.bin` | Install the custom firmware |
+| `J5_0101_patched_v11.bin` | Install the custom firmware |
 | `J5_0101_stock_restore.bin` | Restore stock functions |
 
-Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, v08 or v09, install v10 using the same steps; there is no need to restore stock functions first.
+Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, v08, v09 or v10, install v11 using the same steps; there is no need to restore stock functions first.
 
 ## Installation
 
 Have a charged battery and card reader ready, and back up the photographs on the card. If the camera is on C1.00, first update to C1.01 using [Nikon's official instructions](https://downloadcenter.nikonimglib.com/en/download/fw/234.html). Do not interrupt power or remove the card during the update.
 
-1. Download `J5_0101_patched_v10.bin` and copy it to the root of the memory card.
+1. Download `J5_0101_patched_v11.bin` and copy it to the root of the memory card.
 2. Insert the card, turn the camera on and open Setup → Firmware version → Update.
 3. Follow the on-screen instructions to complete the update and turn the camera off.
 4. Delete the update file from the card, then turn the camera on again.
@@ -72,6 +83,16 @@ The mechanical-lens features have been tested on one J5; fixed ISO and M-mode ca
 Mechanical-lens support in S/P is unchanged from v08. This firmware cannot be used on other Nikon 1 models. It is unofficial experimental firmware.
 
 ## Changelog
+
+### patched v11: Custom controls and MF magnification settings
+
+- Groups the new settings under Setup → Custom, after Firmware version.
+- Adds a shooting-only Delete assignment and makes Wi-Fi remapping shooting-only.
+- Adds persistent half-press cancellation and MF timeout settings for all lens types.
+- Completes registered short full-press requests when half-press cancellation is Off.
+- Unlocks regional language-menu choices; Japanese-market testing is still pending.
+- Corrects custom menu headings, state summaries and Chinese glyphs; removes diagnostic captions.
+- Retains all v10 features and the same restoration file.
 
 ### patched v10: Independently assignable Wi-Fi/Fn2 button
 

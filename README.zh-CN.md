@@ -8,7 +8,7 @@
 
 | 机型 | 版本 | 新增功能 | 使用说明 |
 |---|---|---|---|
-| Nikon 1 J5 | patched v10 | Wi-Fi/Fn2 按钮自定义、纯机械镜头支持、FT1 部分对焦区域解锁、1 秒间隔拍摄及 FT1 镜头兼容性预览 | [J5 使用说明](cameras/J5/README.zh-CN.md) |
+| Nikon 1 J5 | patched v11 | Wi-Fi／删除按钮自定义、MF 放大设置、语言菜单解锁、纯机械镜头支持、FT1 部分对焦区域解锁、1 秒间隔拍摄及 FT1 镜头兼容性预览 | [J5 使用说明](cameras/J5/README.zh-CN.md) |
 
 FT1 功能仍有兼容性限制，包括触摸快门可能持续等待合焦的问题。刷入前请阅读 [J5 使用说明](cameras/J5/README.zh-CN.md)。
 

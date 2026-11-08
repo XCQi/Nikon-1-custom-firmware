@@ -8,7 +8,7 @@ This project adds features that are not available in Nikon's stock firmware. It 
 
 | Camera | Version | Added features | Guide |
 |---|---|---|---|
-| Nikon 1 J5 | patched v10 | Assignable Wi-Fi/Fn2 button, mechanical-lens support, partial FT1 AF-point unlock, 1-second intervals, and FT1 lens compatibility preview | [J5 guide](cameras/J5/README.md) |
+| Nikon 1 J5 | patched v11 | Assignable Wi-Fi/Delete buttons, MF magnification controls, language-menu unlock, mechanical-lens support, partial FT1 AF-point unlock, 1-second intervals, and FT1 lens compatibility preview | [J5 guide](cameras/J5/README.md) |
 
 FT1 features have compatibility limits, including a known touch-shutter focus wait. Read the [J5 guide](cameras/J5/README.md) before installing.
 
