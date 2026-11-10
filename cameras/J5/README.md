@@ -1,8 +1,8 @@
-# Nikon 1 J5 C1.01 — patched v11
+# Nikon 1 J5 C1.01 — patched v11.1
 
 English | [简体中文](README.zh-CN.md) · [Project home](../../README.md)
 
-patched v11 adds shooting-only assignments for the Wi-Fi and Delete buttons, configurable MF magnification behavior, and a language-menu unlock. It retains all v10 features. Nikon 1 J5 only, based on C1.01.
+patched v11.1 adds shooting-only assignments for the Wi-Fi and Delete buttons, configurable MF magnification behavior, and a language-menu unlock. It retains all v10 features. Nikon 1 J5 only, based on C1.01.
 
 ## New in v11
 
@@ -44,20 +44,20 @@ Aperture is still adjusted with the lens aperture ring. The OK hint or aperture 
 
 ## Downloads
 
-Download the file needed from the [J5 patched v11 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v11):
+Download the file needed from the [J5 patched v11.1 release](https://github.com/XCQi/Nikon-1-custom-firmware/releases/tag/j5-patched-v11.1):
 
 | File | Purpose |
 |---|---|
-| `J5_0101_patched_v11.bin` | Install the custom firmware |
+| `J5_0101_patched_v11.1.bin` | Install the custom firmware |
 | `J5_0101_stock_restore.bin` | Restore stock functions |
 
-Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, v08, v09 or v10, install v11 using the same steps; there is no need to restore stock functions first.
+Keep only the firmware being installed on the card, to avoid mixing them up. To upgrade from patched v07, v08, v09 or v10, install v11.1 using the same steps; there is no need to restore stock functions first.
 
 ## Installation
 
 Have a charged battery and card reader ready, and back up the photographs on the card. If the camera is on C1.00, first update to C1.01 using [Nikon's official instructions](https://downloadcenter.nikonimglib.com/en/download/fw/234.html). Do not interrupt power or remove the card during the update.
 
-1. Download `J5_0101_patched_v11.bin` and copy it to the root of the memory card.
+1. Download `J5_0101_patched_v11.1.bin` and copy it to the root of the memory card.
 2. Insert the card, turn the camera on and open Setup → Firmware version → Update.
 3. Follow the on-screen instructions to complete the update and turn the camera off.
 4. Delete the update file from the card, then turn the camera on again.
@@ -84,13 +84,17 @@ Mechanical-lens support in S/P is unchanged from v08. This firmware cannot be us
 
 ## Changelog
 
+### v11.1 — November 11, 2026
+
+Integrates lcat2000’s Japanese-market language-menu fix. Install directly; the separate patch script is unnecessary. Original v11 is preserved in its release for the contributor’s tutorial.
+
 ### patched v11: Custom controls and MF magnification settings
 
 - Groups the new settings under Setup → Custom, after Firmware version.
 - Adds a shooting-only Delete assignment and makes Wi-Fi remapping shooting-only.
 - Adds persistent half-press cancellation and MF timeout settings for all lens types.
 - Completes registered short full-press requests when half-press cancellation is Off.
-- The Japanese-market language-menu fix is included: all 32 language names are available. Kai Chang (lcat2000) confirmed the list and Traditional Chinese persistence after power-off on one Japanese-market J5. Other languages have not received full on-camera testing.
+- Clears regional language-item visibility flags; the complete Japanese-market menu correction is in v11.1.
 - Corrects custom menu headings, state summaries and Chinese glyphs; removes diagnostic captions.
 - Retains all v10 features and the same restoration file.
 

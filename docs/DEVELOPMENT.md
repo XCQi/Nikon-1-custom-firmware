@@ -1,8 +1,8 @@
-# J5 patched v11 Development Notes
+# J5 patched v11.1 Development Notes
 
 English | [简体中文](DEVELOPMENT.zh-CN.md)
 
-This document records the approach and key addresses used in J5 patched v11, including earlier lens/interval features, button assignments, MF magnification controls and menu grouping. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
+This document records the approach and key addresses used in J5 patched v11.1, including earlier lens/interval features, button assignments, MF magnification controls and menu grouping. Installation is covered in the [J5 guide](../cameras/J5/README.md). Full source, build tools and analysis records are retained separately in the internal handoff.
 
 These addresses apply only to the verified original J5 C1.01 firmware. Other Nikon 1 models require their own analysis and cannot use these addresses directly.
 
