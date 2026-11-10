@@ -16,7 +16,7 @@ Wi-Fi/Delete remapping is restricted to the shooting handler at `0x3C3716`. Thei
 
 With cancellation Off, the MF UI retains half-press/release events and records a logical full press. In the native SYS S1/S2 callback at `0x12B302`, an eligible rising S2 request is submitted once through the original touch-shutter flow at `0x12F91A`. That flow ends MF, waits for completion, and uses native capture requests. The original physical submission branch is skipped for that notification, while native input-cache updates at `0x1876B4` remain. Only the touch gate's S1-held rejection is bypassed during this submission; shared S1 is not modified and other qualifications stay native. This implements a committed single-shot request rather than post-shot magnification restoration. Other input conditions replay the original physical handler.
 
-The release is based on hardware-confirmed custom-menu test15. Diagnostic captions were removed for publication; instruction-level checks and container/CRC/XOR checks were rerun. These checks model the lower RTOS, sensor and storage effects and do not replace camera testing. Regional language visibility edits are included, but Japanese-market hardware remains untested. Retired debug-code/text arenas are fixed and audited; this does not establish free space or compatibility on another body.
+The release is based on hardware-confirmed custom-menu test15. Diagnostic captions were removed for publication; instruction-level checks and container/CRC/XOR checks were rerun. These checks model the lower RTOS, sensor and storage effects and do not replace camera testing. The Japanese-market language-menu fix is included: all 32 language names are available. Kai Chang (lcat2000) confirmed the list and Traditional Chinese persistence after power-off on one Japanese-market J5. Other languages have not received full on-camera testing. Retired debug-code/text arenas are fixed and audited; this does not establish free space or compatibility on another body.
 
 ## Why several separate edits were needed
 
@@ -199,3 +199,9 @@ Other Nikon 1 models require independent checks of container, address mapping, i
 | patched v07 | `94b545bc2b1e6cc3a6599daf73b56bef972fb321da7cfe2b1588f159d6966ab2` |
 | Restoration | `0fb4f4115c6f09ca30b87d84affd233ff6891559edc649ac812289a0b0aa31d6` |
 | patched v10 | `255fe4c3cf4b99cf3b0e5ee86e1bcfd854d693b08872b32ea679c2f10f7f8a15` |
+
+## Japanese-market language-menu correction — November 11
+
+The original v11 cleared the per-language visibility masks but left two independent regional checks in the language screen. At runtime addresses `0x424B90` and `0x424E00`, replace the property-1 reads with `movs r0,#1; str r0,[r3]` (`01 20 18 60`). This selects the international screen initialization and input paths without changing the stored sales region. The font-getter veneer literal at `0x2F6098` changes from `0x005AF1B1` to `0x005AF199`, so temporary language-name rendering uses the same font getter as the full UI. Recompute both CRCs.
+
+Thanks to [Kai Chang / lcat2000](https://github.com/lcat2000/nikon1-zhtw-language-patch/blob/main/docs/xcqi-j5-v11-report.md) for the fix and testing. The replacement BIN SHA-256 is `974a1d37ce577c862021f042c1bd7cd58ebafc53c17c79837f7471bf6653ac95`. Independently rebuilding these three edits reproduces his tested file exactly. His hardware validation covers the list and Traditional Chinese persistence on one Japanese-market J5; it does not cover all languages or regression of the other v11 features.

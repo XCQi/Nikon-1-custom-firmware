@@ -21,7 +21,7 @@ On first initialization, **Half-press cancel zoom (MF) is On** and **Keep MF zoo
 
 With half-press cancellation Off, a registered full press completes a single-shot request even if the button is released quickly. Magnification ends for capture; it is not restored automatically after the photograph. This behavior was confirmed in the test15 build used as the release basis. The release removes its diagnostic captions; the shooting logic is unchanged.
 
-**Language menu:** removes the regional visibility restriction on the firmware's 32 language choices, intended to make additional languages available on Japanese-market cameras. Japanese-market hardware has not yet been tested; feedback is welcome. Button-assignment labels use the firmware's existing language resources. Both new MF setting names are localized for all 32 firmware languages. Short forms are used where needed to fit the menu. Native font coverage and text decoding have been checked; typography has not been camera-tested in every language. Menu headings and selection summaries have also been corrected.
+**Language menu:** The Japanese-market language-menu fix is included: all 32 language names are available. Kai Chang (lcat2000) confirmed the list and Traditional Chinese persistence after power-off on one Japanese-market J5. Other languages have not received full on-camera testing. Button-assignment labels use the firmware's existing language resources. Both new MF setting names are localized for all 32 firmware languages. Short forms are used where needed to fit the menu. Native font coverage and text decoding have been checked; typography has not been camera-tested in every language. Menu headings and selection summaries have also been corrected.
 
 ## Features retained from v09
 
@@ -90,7 +90,7 @@ Mechanical-lens support in S/P is unchanged from v08. This firmware cannot be us
 - Adds a shooting-only Delete assignment and makes Wi-Fi remapping shooting-only.
 - Adds persistent half-press cancellation and MF timeout settings for all lens types.
 - Completes registered short full-press requests when half-press cancellation is Off.
-- Unlocks regional language-menu choices; Japanese-market testing is still pending.
+- The Japanese-market language-menu fix is included: all 32 language names are available. Kai Chang (lcat2000) confirmed the list and Traditional Chinese persistence after power-off on one Japanese-market J5. Other languages have not received full on-camera testing.
 - Corrects custom menu headings, state summaries and Chinese glyphs; removes diagnostic captions.
 - Retains all v10 features and the same restoration file.
 
